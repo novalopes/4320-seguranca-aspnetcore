@@ -29,6 +29,13 @@ builder.Services.AddTransient<IConsultaRepository, ConsultaRepository>();
 builder.Services.AddTransient<IMedicoService, MedicoService>();
 builder.Services.AddTransient<IConsultaService, ConsultaService>();
 
+builder.Services.AddAntiforgery(options =>
+{
+    options.Cookie.Name = "VollMed.AntiForgery";
+    options.Cookie.HttpOnly = true;
+    options.HeaderName = "X-CSRF-TOKEN";
+});
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
