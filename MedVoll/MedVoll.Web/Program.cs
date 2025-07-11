@@ -24,6 +24,19 @@ builder.Services
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
+builder.Services.Configure<IdentityOptions>(options =>
+{
+    options.SignIn.RequireConfirmedEmail = true;            // Exigir e-mails confirmados para login
+    options.SignIn.RequireConfirmedPhoneNumber = false;     // Não exigir confirmação de número de telefone
+});
+
+builder.Services.Configure<IdentityOptions>(options =>
+{
+    options.Lockout.AllowedForNewUsers = true;
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(2);
+    options.Lockout.MaxFailedAccessAttempts = 2;
+});
+
 builder.Services.AddTransient<IMedicoRepository, MedicoRepository>();
 builder.Services.AddTransient<IConsultaRepository, ConsultaRepository>();
 builder.Services.AddTransient<IMedicoService, MedicoService>();
@@ -74,8 +87,8 @@ using (var scope = app.Services.CreateScope())
     catch (Exception ex)
     {
         // Log the error (uncomment ex variable name and write a log.)
-        //throw new Exception("An error occurred seeding the DB.", ex);
-        Console.WriteLine($"Erro ao executar o Seeder: {ex.Message}");
+        throw new Exception("An error occurred seeding the DB.", ex);
+        //Console.WriteLine($"Erro ao executar o Seeder: {ex.Message}");
     }
 }
 
