@@ -36,6 +36,8 @@ builder.Services.AddAntiforgery(options =>
     options.HeaderName = "X-CSRF-TOKEN";
 });
 
+builder.Services.AddAuthorization();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -52,11 +54,14 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.MapRazorPages().WithStaticAssets();
 
 using (var scope = app.Services.CreateScope())
 {
