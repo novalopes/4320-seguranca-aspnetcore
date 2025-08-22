@@ -39,6 +39,13 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.Password.RequiredLength = 8;                    // Tamanho mínimo da senha
 });
 
+builder.Services.Configure<IdentityOptions>(options =>
+{
+    options.Lockout.AllowedForNewUsers = true;
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(2);
+    options.Lockout.MaxFailedAccessAttempts = 2;
+});
+
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LoginPath = "/Identity/Account/Login"; // Redireciona para login se não autenticado
@@ -52,11 +59,12 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.Cookie.SameSite = SameSiteMode.Strict; // Restringe envio de cookies entre sites
 });
 
-builder.Services.Configure<IdentityOptions>(options =>
-{
-    options.Lockout.AllowedForNewUsers = true;
-    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(2);
-    options.Lockout.MaxFailedAccessAttempts = 2;
+builder.Services.AddSession(options =>
+{     
+    options.Cookie.HttpOnly = true; // Impede acesso via JavaScript
+    options.Cookie.IsEssential = true; // Necessário para o funcionamento da aplicação
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Exige HTTPS
+    options.IdleTimeout = TimeSpan.FromMinutes(1); // Tempo de expiração da sessão
 });
 
 builder.Services.AddTransient<IMedicoRepository, MedicoRepository>();
@@ -85,6 +93,7 @@ else
     app.UseStatusCodePagesWithReExecute("/erro/{0}");
 }
 
+app.UseSession();
 app.UseStaticFiles();
 
 app.UseRouting();
